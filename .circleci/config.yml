@@ -23,7 +23,6 @@ jobs:
       - run:
           name: Run tests and save output
           command: |
-            cd $TEST_PATH
             TEST=$(cat list_of_tests.txt | circleci tests split )
             dotnet test --filter $TEST --logger:"trx;LogFilePrefix=testResults"
       - save_cache:
