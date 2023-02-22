@@ -20,7 +20,7 @@ jobs:
             dotnet restore
       - run:
           command: |
-            dotnet test
+            dotnet test -t
       - save_cache:
           paths: 
             - ./
