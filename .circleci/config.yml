@@ -6,7 +6,7 @@ orbs:
 jobs:
   unit-tests:
     executor:
-      name: win/server-2019
+      name: win/server-2022
       shell: bash.exe
     steps:
       - checkout
