@@ -8,8 +8,13 @@ jobs:
     executor:
       name: win/server-2022
       shell: bash.exe
+    working_directory: C:\Users\circleci\project\PrimeService.Tests
     steps:
-      - checkout
+      - checkout:
+          path: C:\Users\circleci\project
+      - restore_cache:
+          keys:
+            - dotnet-packages-v1-{{ checksum "PrimeService.Tests.csproj" }}
       - run:
           command: |
             cd PrimeService.Tests
