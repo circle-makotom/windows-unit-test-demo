@@ -16,11 +16,16 @@ jobs:
           keys:
             - dotnet-packages-v1-{{ checksum "PrimeService.Tests.csproj" }}
       - run:
+          name: Generate list of tests
           command: |
-            dotnet restore
+            dotnet test -t --nologo > list_of_tests.txt
+            sed -i '1,/available:/d;s/^[ \t]*//' list_of_tests.txt
       - run:
+          name: Run tests and save output
           command: |
-            dotnet test -t
+            cd $TEST_PATH
+            TEST=$(cat list_of_tests.txt | circleci tests split )
+            dotnet test --filter $TEST --logger:"trx;LogFilePrefix=testResults"
       - save_cache:
           paths: 
             - ./
