@@ -1,0 +1,47 @@
+version: 2.1
+
+orbs:
+  win: circleci/windows@5.0.0
+
+jobs:
+  unit-tests:
+    executor:
+      name: win/server-2019
+      shell: bash.exe
+    steps:
+      - checkout
+      - run:
+          command: |
+            cd PrimeService.Tests
+            dotnet restore
+      - run:
+          command: |
+            cd PrimeService.Tests
+            dotnet test
+      # - run:
+      #     name: Generate list of tests
+      #     command: |
+      #       cd $TEST_PATH
+      #       dotnet test -t --nologo > list_of_tests.txt
+      #       sed -i '1,/available:/d;s/^[ \t]*//' list_of_tests.txt
+      # - run:
+      #     name: Run browser tests and save output
+      #     command: |
+      #       cd $TEST_PATH
+      #       TEST=$(cat list_of_tests.txt | circleci tests split )
+      #       dotnet test --filter $TEST --logger:"trx;LogFilePrefix=testResults"
+      # - run:
+      #     name: install trx2junit and convert test results to junit
+      #     command: |
+      #       dotnet tool install -g trx2junit
+      #       cd $TEST_PATH
+      #       /c/Users/circleci/.dotnet/tools/trx2junit.exe TestResults/*
+      # - store_test_results:
+      #     path: $TEST_PATH/TestResults
+      # - store_artifacts:
+      #     path: $TEST_PATH/TestResults
+ 
+workflows:
+  integration-tests:
+    jobs:
+      - unit-tests
