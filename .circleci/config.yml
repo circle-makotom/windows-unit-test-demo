@@ -17,12 +17,14 @@ jobs:
             - dotnet-packages-v1-{{ checksum "PrimeService.Tests.csproj" }}
       - run:
           command: |
-            cd PrimeService.Tests
             dotnet restore
       - run:
           command: |
-            cd PrimeService.Tests
             dotnet test
+      - save_cache:
+          paths: 
+            - ./
+          key: dotnet-packages-v1-{{ checksum "PrimeService.Tests.csproj" }}
       # - run:
       #     name: Generate list of tests
       #     command: |
