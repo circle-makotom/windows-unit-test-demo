@@ -19,15 +19,25 @@ jobs:
           name: Generate list of tests
           command: |
             # This generates a list of tests and saves to a file
-            dotnet test -t --nologo > list_of_tests.txt
+            dotnet test -t --nologo > list-of-tests.txt
             # This cuts out the crud and formats the list of tests
-            sed -i '1,/available:/d;s/^[ \t]*//;s/$/ |/' list_of_tests.txt
+            echo Scraping the list of tests
+            sed -e '1,/The following Tests are available:/d' -e 's/^[[:space:]]\{1,\}//g' list-of-tests.txt | tee pool.txt
+            echo
+            echo Passing through '`circleci tests`' and reformatting
+            circleci tests split --split-by timings --timings-type testname <pool.txt | tee tests-to-run.txt
+            echo
+            echo Running the worlds most complex sed command
+            sed 's/^/DisplayName=\"/;$ ! s/$/\"|/;s/[(]/\\(/g;s/[)]/\\)/g' tests-to-run.txt | tr -d '\r\n' | tee filtered-test-list.txt
+            cat filtered-test-list.txt
+
       - run:
           name: Run tests and save output
           command: |
-            # Struggling here to apply the list of tests in the correct format
-            TEST=$(cat list_of_tests.txt | circleci tests split )
+            TEST=$(cat filtered-test-list.txt)
+            # Struggling here as my list needs to be surrounded by single quotes which is hard to do in bash
             dotnet test --filter $TEST --logger:"trx;LogFilePrefix=testResults"
+            dotnet test --filter 'DisplayName="Prime.UnitTests.Services.PrimeService_IsPrimeShould.IsPrime_NonPrimesLessThan10_ReturnFalse\(value: 4\)"|DisplayName="Prime.UnitTests.Services.PrimeService_IsPrimeShould.IsPrime_NonPrimesLessThan10_ReturnFalse\(value: 6\)"' --logger:"trx;LogFilePrefix=testResults"
       - save_cache:
           paths: 
             - ./
