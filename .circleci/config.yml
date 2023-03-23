@@ -29,9 +29,8 @@ jobs:
             echo
             echo Running the worlds most complex sed commands
             sed -e 's/^/DisplayName=\"/;$ ! s/$/\"|/' tests-to-run.txt | tr -d '\r\n' | tee filtered-test-list-1.txt
-            cat filtered-test-list-1.txt
-            # had to separate the bracket escaping here
-            sed -e 's/[(]/\\(/g;s/[)]/\\)/g' filtered-test-list-1.txt | tee filtered-test-list-2.txt
+            # had to separate the bracket escaping here. Tee will work when SSHed onto the executor \o/ but not
+            sed -e 's/[(]/\\(/g;s/[)]/\\)/g' filtered-test-list-1.txt > filtered-test-list-2.txt
             cat filtered-test-list-2.txt
 
       - run:
