@@ -27,16 +27,19 @@ jobs:
             echo Passing through '`circleci tests`' and reformatting
             circleci tests split --split-by timings --timings-type testname <pool.txt | tee tests-to-run.txt
             echo
-            echo Running the worlds most complex sed command
-            sed -e 's/^/DisplayName=\"/;s/[(]/\\(/g;s/[)]/\\)/g;$ ! s/$/\"|/' tests-to-run.txt | tr -d '\r\n' | tee filtered-test-list.txt
-            cat filtered-test-list.txt
+            echo Running the worlds most complex sed commands
+            sed -e 's/^/DisplayName=\"/;$ ! s/$/\"|/' tests-to-run.txt | tr -d '\r\n' | tee filtered-test-list-1.txt
+            cat filtered-test-list-1.txt
+            # had to separate the bracket escaping here
+            sed -e 's/[(]/\\(/g;s/[)]/\\)/g' filtered-test-list-1.txt | tee filtered-test-list-2.txt
+            cat filtered-test-list-2.txt
 
       - run:
           name: Run tests and save output
           command: |
             TEST=$(cat filtered-test-list.txt)
             # Struggling here as my list needs to be surrounded by single quotes which is hard to do in bash
-            dotnet test --filter $TEST --logger:"trx;LogFilePrefix=testResults"
+            # dotnet test --filter $TEST --logger:"trx;LogFilePrefix=testResults"
             dotnet test --filter 'DisplayName="Prime.UnitTests.Services.PrimeService_IsPrimeShould.IsPrime_NonPrimesLessThan10_ReturnFalse\(value: 4\)"|DisplayName="Prime.UnitTests.Services.PrimeService_IsPrimeShould.IsPrime_NonPrimesLessThan10_ReturnFalse\(value: 6\)"' --logger:"trx;LogFilePrefix=testResults"
       - save_cache:
           paths: 
