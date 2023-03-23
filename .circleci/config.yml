@@ -28,7 +28,7 @@ jobs:
             circleci tests split --split-by timings --timings-type testname <pool.txt | tee tests-to-run.txt
             echo
             echo Running the worlds most complex sed command
-            sed 's/^/DisplayName=\"/;$ ! s/$/\"|/;s/[(]/\\(/g;s/[)]/\\)/g' tests-to-run.txt | tr -d '\r\n' | tee filtered-test-list.txt
+            sed -e 's/^/DisplayName=\"/;s/[(]/\\(/g;s/[)]/\\)/g;$ ! s/$/\"|/' tests-to-run.txt | tr -d '\r\n' | tee filtered-test-list.txt
             cat filtered-test-list.txt
 
       - run:
